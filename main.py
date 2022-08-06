@@ -28,6 +28,8 @@ for i in DictFromCSV['firstName']:
     StrippedID = re.sub('\D', '', id)
     OriginalPrefix = id.strip(StrippedID)
     StartingIndex = 0
+    FirstName = DictFromCSV['firstName'][i]
+    LastName = DictFromCSV['lastName'][i]
 
     while not FoundUser and StartingIndex < len(StartingPrefix):
         Response = requests.get(f"https://uspsa.org/classification/{id}")
@@ -47,9 +49,9 @@ for i in DictFromCSV['firstName']:
                 if StartingIndex < len(StartingPrefix):
                     id = f"{StartingPrefix[StartingIndex]}{StrippedID}"
                     StartingIndex += 1
-                    
+
     if not FoundUser:
-        print(f"Unable to find data for {DictFromCSV['firstName'][i]} {DictFromCSV['lastName'][i]} with uspsa number {OriginalPrefix}{StrippedID}")
+        print(f"Unable to find data for {FirstName} {LastName} with uspsa number {OriginalPrefix}{StrippedID}")
 
     else:
         Results = MySoup.find_all(name="th", scope="row")
@@ -61,8 +63,8 @@ for i in DictFromCSV['firstName']:
             RealClass = RawClass.getText()[-2:]
             Classification = RealClass.strip()
             if Classification != "U":
-                CompleteDict['firstName'][Index] = DictFromCSV['firstName'][i]
-                CompleteDict['lastName'][Index] = DictFromCSV['lastName'][i]
+                CompleteDict['firstName'][Index] = FirstName
+                CompleteDict['lastName'][Index] = LastName
                 CompleteDict['uspsaNumber'][Index] = id
                 CompleteDict['division'][Index] = Division
                 CompleteDict['classification'][Index] = Classification
