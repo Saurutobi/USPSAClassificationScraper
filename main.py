@@ -47,9 +47,9 @@ for i in DictFromCSV['firstName']:
                 if StartingIndex < len(StartingPrefix):
                     id = f"{StartingPrefix[StartingIndex]}{StrippedID}"
                     StartingIndex += 1
+                    
     if not FoundUser:
         print(f"Unable to find data for {DictFromCSV['firstName'][i]} {DictFromCSV['lastName'][i]} with uspsa number {OriginalPrefix}{StrippedID}")
-
 
     else:
         Results = MySoup.find_all(name="th", scope="row")
