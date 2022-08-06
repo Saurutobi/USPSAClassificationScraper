@@ -30,8 +30,8 @@ for i in DictFromCSV['firstName']:
         Error = MySoup.find(name="div", class_="alert")
         FoundUser = Error is None
         if not FoundUser:
-            stripped_id = re.sub('\D', '', id)
-            id = f"{StartingPrefix[StartingIndex]}{stripped_id}"
+            StrippedID = re.sub('\D', '', id)
+            id = f"{StartingPrefix[StartingIndex]}{StrippedID}"
             StartingIndex += 1
 
     Results = MySoup.find_all(name="th", scope="row")
