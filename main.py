@@ -36,7 +36,7 @@ for i in DictFromCSV['firstName']:
         Error = MySoup.find(name="span", text="Error")    
         if Error is not None:
             print("Rate limited, sleeping")
-            time.sleep(600)
+            time.sleep(1800)
 
         else:
             Error = MySoup.find(name="div", class_="alert")
@@ -44,10 +44,14 @@ for i in DictFromCSV['firstName']:
             if not FoundUser:
                 if StartingPrefix[StartingIndex] == OriginalPrefix:
                     StartingIndex += 1
-                id = f"{StartingPrefix[StartingIndex]}{StrippedID}"
-                StartingIndex += 1
-        
-    if FoundUser:
+                if StartingIndex < len(StartingPrefix):
+                    id = f"{StartingPrefix[StartingIndex]}{StrippedID}"
+                    StartingIndex += 1
+    if not FoundUser:
+        print(f"Unable to find data for {DictFromCSV['firstName'][i]} {DictFromCSV['lastName'][i]} with uspsa number {OriginalPrefix}{StrippedID}")
+
+
+    else:
         Results = MySoup.find_all(name="th", scope="row")
 
         for j in range(9,15):
@@ -56,7 +60,7 @@ for i in DictFromCSV['firstName']:
             RawClass = Results[j].find_next_sibling("td")
             RealClass = RawClass.getText()[-2:]
             Classification = RealClass.strip()
-            if "U" not in RealClass:
+            if Classification != "U":
                 CompleteDict['firstName'][Index] = DictFromCSV['firstName'][i]
                 CompleteDict['lastName'][Index] = DictFromCSV['lastName'][i]
                 CompleteDict['uspsaNumber'][Index] = id
