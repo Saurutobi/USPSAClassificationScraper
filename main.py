@@ -27,35 +27,37 @@ for i in DictFromCSV['firstName']:
 
     FoundUser = False
     id = DictFromCSV['uspsaNumber'][i]
-    StrippedID = re.sub('\D', '', id)
-    OriginalPrefix = id.strip(StrippedID).upper()
-    StartingIndex = 0
     FirstName = DictFromCSV['firstName'][i]
     LastName = DictFromCSV['lastName'][i]
 
-    while not FoundUser and StartingIndex < len(StartingPrefix):
-        Response = requests.get(f"https://uspsa.org/classification/{id}")
-        MySoup = BeautifulSoup(Response.text, "html.parser") 
+    if not pd.isna(id):
+        StrippedID = re.sub('\D', '', id)
+        OriginalPrefix = id.strip(StrippedID).upper()
+        StartingIndex = 0
 
-        Error = MySoup.find(name="span", text="Error")    
-        if Error is not None:
-            print("Rate limited saved current dict to csv, sleeping for 1 hour")
-            df = pd.DataFrame(CompleteDict)
-            df.to_csv(OUTPUT_FILE_NAME, index=False)
-            time.sleep(3600)
+        while not FoundUser and StartingIndex < len(StartingPrefix):
+            Response = requests.get(f"https://uspsa.org/classification/{id}")
+            MySoup = BeautifulSoup(Response.text, "html.parser") 
 
-        else:
-            Error = MySoup.find(name="strong", text=re.compile("Oops!"))
-            FoundUser = Error is None
-            if not FoundUser:
-                if StartingPrefix[StartingIndex] == OriginalPrefix:
-                    StartingIndex += 1
-                if StartingIndex < len(StartingPrefix):
-                    id = f"{StartingPrefix[StartingIndex]}{StrippedID}"
-                    StartingIndex += 1
+            Error = MySoup.find(name="span", text="Error")    
+            if Error is not None:
+                print("Rate limited saved current dict to csv, sleeping for 1 hour")
+                df = pd.DataFrame(CompleteDict)
+                df.to_csv(OUTPUT_FILE_NAME, index=False)
+                time.sleep(3600)
+
+            else:
+                Error = MySoup.find(name="strong", text=re.compile("Oops!"))
+                FoundUser = Error is None
+                if not FoundUser:
+                    if StartingPrefix[StartingIndex] == OriginalPrefix:
+                        StartingIndex += 1
+                    if StartingIndex < len(StartingPrefix):
+                        id = f"{StartingPrefix[StartingIndex]}{StrippedID}"
+                        StartingIndex += 1
 
     if not FoundUser:
-        print(f"Unable to find data for {FirstName} {LastName} with uspsa number {OriginalPrefix}{StrippedID}")
+        print(f"Unable to find data for {FirstName} {LastName} at index {i}")
 
     else:
         for Division in Divisions:
