@@ -6,6 +6,7 @@ import pandas as pd
 INPUT_FILE_NAME = "Book1.csv"
 OUTPUT_FILE_NAME = "out.csv"
 SLEEP_TIME = 10 # in s between member searches
+WRITE_TO_CSV = 10 # write to csv every n pass
 
 
 StartingPrefix = ["A", "FY", "TY", "L", "B"]
@@ -38,7 +39,9 @@ for i in DictFromCSV['firstName']:
 
         Error = MySoup.find(name="span", text="Error")    
         if Error is not None:
-            print("Rate limited, sleeping for 1 hour")
+            print("Rate limited saved current dict to csv, sleeping for 1 hour")
+            df = pd.DataFrame(CompleteDict)
+            df.to_csv(OUTPUT_FILE_NAME, index=False)
             time.sleep(3600)
 
         else:
@@ -69,6 +72,11 @@ for i in DictFromCSV['firstName']:
                 CompleteDict['division'][Index] = Division
                 CompleteDict['classification'][Index] = Classification
                 Index += 1
+        
+        if i % WRITE_TO_CSV == 0:
+            df = pd.DataFrame(CompleteDict)
+            df.to_csv(OUTPUT_FILE_NAME, index=False)
+
         time.sleep(SLEEP_TIME)
 
 df = pd.DataFrame(CompleteDict)
