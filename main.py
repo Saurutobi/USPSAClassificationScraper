@@ -26,7 +26,7 @@ for i in DictFromCSV['firstName']:
     FoundUser = False
     id = DictFromCSV['uspsaNumber'][i]
     StrippedID = re.sub('\D', '', id)
-    OriginalPrefix = id.strip(StrippedID)
+    OriginalPrefix = id.strip(StrippedID).upper()
     StartingIndex = 0
     FirstName = DictFromCSV['firstName'][i]
     LastName = DictFromCSV['lastName'][i]
@@ -37,8 +37,8 @@ for i in DictFromCSV['firstName']:
 
         Error = MySoup.find(name="span", text="Error")    
         if Error is not None:
-            print("Rate limited, sleeping")
-            time.sleep(1800)
+            print("Rate limited, sleeping for 1 hour")
+            time.sleep(3600)
 
         else:
             Error = MySoup.find(name="div", class_="alert")
