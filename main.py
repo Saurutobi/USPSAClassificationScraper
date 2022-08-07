@@ -9,6 +9,7 @@ SLEEP_TIME = 10 # in s between member searches
 
 
 StartingPrefix = ["A", "FY", "TY", "L", "B"]
+Divisions = ["Open", "Limited", "Limited 10", "Production", "Revolver", "Single Stack", "Carry Optics", "PCC"]
 
 DictFromCSV = pd.read_csv(INPUT_FILE_NAME).to_dict()
 
@@ -41,7 +42,7 @@ for i in DictFromCSV['firstName']:
             time.sleep(3600)
 
         else:
-            Error = MySoup.find(name="div", class_="alert")
+            Error = MySoup.find(name="strong", text=re.compile("Oops!"))
             FoundUser = Error is None
             if not FoundUser:
                 if StartingPrefix[StartingIndex] == OriginalPrefix:
@@ -54,12 +55,11 @@ for i in DictFromCSV['firstName']:
         print(f"Unable to find data for {FirstName} {LastName} with uspsa number {OriginalPrefix}{StrippedID}")
 
     else:
-        Results = MySoup.find_all(name="th", scope="row")
-
-        for j in range(9,15):
-            RawDivision = Results[j].getText()
+        for Division in Divisions:
+            Results = MySoup.find(name="th", text=re.compile(Division))
+            RawDivision = Results.getText()
             Division = RawDivision.strip()
-            RawClass = Results[j].find_next_sibling("td")
+            RawClass = Results.find_next_sibling("td")
             RealClass = RawClass.getText()[-2:]
             Classification = RealClass.strip()
             if Classification != "U":
