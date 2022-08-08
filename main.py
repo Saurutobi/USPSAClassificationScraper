@@ -5,8 +5,24 @@ import pandas as pd
 
 INPUT_FILE_NAME = "uspsa.csv"
 OUTPUT_FILE_NAME = "out4.csv"
+ERROR_FILE_NAME = "err.csv"
 SLEEP_TIME = 10 # in s between member searches
 WRITE_TO_CSV = 10 # write to csv every n pass
+
+
+def add_to_dict(CompleteDict, first, last, id, division, classification, Index):
+    CompleteDict['firstName'][Index] = first
+    CompleteDict['lastName'][Index] = last
+    CompleteDict['uspsaNumber'][Index] = id
+    CompleteDict['division'][Index] = division
+    CompleteDict['classification'][Index] = classification 
+    return False
+
+def save_to_csv(theDict, ErrorDict):
+    df = pd.DataFrame(theDict)
+    df.to_csv(OUTPUT_FILE_NAME, index=False)
+    df2 = pd.DataFrame(ErrorDict)
+    df2.to_csv(ERROR_FILE_NAME, index=False)
 
 
 StartingPrefix = ["A", "FY", "TY"]
@@ -21,7 +37,13 @@ CompleteDict = {"firstName": {},
                 "classification": {}
                 }
 
+UnfoundDict = {"firstName": {},
+               "lastName": {},
+               "index": {}
+               }
+
 Index = 0
+UnfoundIndex = 0
 
 for i in DictFromCSV['firstName']:
 
@@ -41,8 +63,7 @@ for i in DictFromCSV['firstName']:
 
             Error = MySoup.find(name="span", text="Error")    
             if Error is not None:
-                df = pd.DataFrame(CompleteDict)
-                df.to_csv(OUTPUT_FILE_NAME, index=False)
+                save_to_csv(CompleteDict, UnfoundDict)
                 input(f"Rate limited at index {i} press enter to continue")
 
             else:
@@ -57,8 +78,9 @@ for i in DictFromCSV['firstName']:
                 StartingIndex += 1
 
     if not FoundUser:
-        print(f"Unable to find data for {FirstName} {LastName} at index {i}")
-
+        UnfoundDict["firstName"][UnfoundIndex] = FirstName
+        UnfoundDict["lastName"][UnfoundIndex] = LastName
+        UnfoundDict["index"][UnfoundIndex] = i
 
     else:
         Unclassified = True
@@ -71,36 +93,20 @@ for i in DictFromCSV['firstName']:
             Classification = RealClass.strip()
             if Classification == "X":
                 if Unclassified:
-                    Unclassified = False
-                    CompleteDict['firstName'][Index] = FirstName
-                    CompleteDict['lastName'][Index] = LastName
-                    CompleteDict['uspsaNumber'][Index] = id
-                    CompleteDict['division'][Index] = "Non-member"
-                    CompleteDict['classification'][Index] = "X"    
+                    Unclassified = add_to_dict(CompleteDict, FirstName, LastName, id, "Non-member", "X", Index) 
                     Index += 1   
 
             elif Classification != "U":
-                Unclassified = False
-                CompleteDict['firstName'][Index] = FirstName
-                CompleteDict['lastName'][Index] = LastName
-                CompleteDict['uspsaNumber'][Index] = id
-                CompleteDict['division'][Index] = Division
-                CompleteDict['classification'][Index] = Classification
+                Unclassified = add_to_dict(CompleteDict, FirstName, LastName, id, Division, Classification, Index)
                 Index += 1
         
         if Unclassified:
-            CompleteDict['firstName'][Index] = FirstName
-            CompleteDict['lastName'][Index] = LastName
-            CompleteDict['uspsaNumber'][Index] = id
-            CompleteDict['division'][Index] = "Unclassified"
-            CompleteDict['classification'][Index] = "U"    
+            Unclassified = add_to_dict(CompleteDict, FirstName, LastName, id, "Unclassified", "U", Index)
             Index += 1    
 
-    if i % WRITE_TO_CSV == 0:
-        df = pd.DataFrame(CompleteDict)
-        df.to_csv(OUTPUT_FILE_NAME, index=False)
+    if i % WRITE_TO_CSV == 0 and i != 0:
+        save_to_csv(CompleteDict, UnfoundDict)
 
     time.sleep(SLEEP_TIME)
 
-df = pd.DataFrame(CompleteDict)
-df.to_csv(OUTPUT_FILE_NAME, index=False)
+save_to_csv(CompleteDict, UnfoundDict)
