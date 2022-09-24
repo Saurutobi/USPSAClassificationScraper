@@ -4,7 +4,7 @@ import pandas as pd
 
 
 INPUT_FILE_NAME = "uspsa.csv"
-OUTPUT_FILE_NAME = "out4.csv"
+OUTPUT_FILE_NAME = "himarcel.csv"
 ERROR_FILE_NAME = "err.csv"
 SLEEP_TIME = 10 # in s between member searches
 WRITE_TO_CSV = 10 # write to csv every n pass
@@ -81,6 +81,7 @@ for i in DictFromCSV['firstName']:
         UnfoundDict["firstName"][UnfoundIndex] = FirstName
         UnfoundDict["lastName"][UnfoundIndex] = LastName
         UnfoundDict["index"][UnfoundIndex] = i
+        UnfoundIndex += 1
 
     else:
         Unclassified = True
