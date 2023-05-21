@@ -26,7 +26,7 @@ def save_to_csv(theDict, ErrorDict):
 
 
 StartingPrefix = ["A", "FY", "TY"]
-Divisions = ["Open", "Limited", "Limited 10", "Production", "Revolver", "Single Stack", "Carry Optics", "PCC"]
+Divisions = ["Open", "Limited", "Limited 10", "Limited Optics", "Production", "Revolver", "Single Stack", "Carry Optics", "PCC"]
 
 DictFromCSV = pd.read_csv(INPUT_FILE_NAME).to_dict()
 

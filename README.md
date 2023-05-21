@@ -1,7 +1,7 @@
 # USPSAClassificationScraper
 The main.py uses "uspsa.csv" to scrape uspsa.com classifications for the competitors in the file
 
-Use <code>python3 main.py</code> to run
+Use <code>python main.py</code> to run
 
 Will output to "classifications.csv" and errors go to "Errors.csv"
 
@@ -11,4 +11,6 @@ Will output to "classifications.csv" and errors go to "Errors.csv"
 
 # Uspsa.csv file
 You'll need to add this file. Format is
-<code>firstname,lastname,uspsaNumber</code>
+
+<code>firstname,lastname,uspsaNumber
+[firstnamehere],[lastnamehere][uspsanumberhere]</code>
