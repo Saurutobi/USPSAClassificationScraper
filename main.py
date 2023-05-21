@@ -4,8 +4,8 @@ import pandas as pd
 
 
 INPUT_FILE_NAME = "uspsa.csv"
-OUTPUT_FILE_NAME = "himarcel.csv"
-ERROR_FILE_NAME = "err.csv"
+OUTPUT_FILE_NAME = "classifications.csv"
+ERROR_FILE_NAME = "errors.csv"
 SLEEP_TIME = 10 # in s between member searches
 WRITE_TO_CSV = 10 # write to csv every n pass
 
